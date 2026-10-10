@@ -36,13 +36,12 @@ def fetch_thingspeak_data(channel_id, read_key, results):
             
         df = pd.DataFrame(data['feeds'])
         # Rename columns based on our Arduino code mapping
-        # field1 = Voltage, field2 = Current, field3 = Power, field4 = Energy
+        # field1 = Current, field2 = Power, field3 = Energy
         df = df.rename(columns={
             'created_at': 'timestamp',
-            'field1': 'voltage',
-            'field2': 'current',
-            'field3': 'power',
-            'field4': 'energy'
+            'field1': 'current',
+            'field2': 'power',
+            'field3': 'energy'
         })
         
         # Convert types and adjust timezone from UTC to Philippine Standard Time (UTC+8)
@@ -50,7 +49,7 @@ def fetch_thingspeak_data(channel_id, read_key, results):
         if df['timestamp'].dt.tz is None:
             df['timestamp'] = df['timestamp'].dt.tz_localize('UTC')
         df['timestamp'] = df['timestamp'].dt.tz_convert('Asia/Manila').dt.tz_localize(None)
-        for col in ['voltage', 'current', 'power', 'energy']:
+        for col in ['current', 'power', 'energy']:
             df[col] = pd.to_numeric(df[col], errors='coerce')
             
         df = df.dropna()
@@ -69,7 +68,6 @@ def generate_dummy_data():
     
     df = pd.DataFrame({
         'timestamp': dates,
-        'voltage': 230.0,
         'current': power / 230.0,
         'power': power,
         'energy': np.cumsum(power / 60 / 1000) # Roughly accumulating kWh
