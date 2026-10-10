@@ -58,7 +58,7 @@ def fetch_thingspeak_data(channel_id, read_key, results):
 
 # Generate dummy data if no channel ID is provided
 def generate_dummy_data():
-    dates = pd.date_range(end=datetime.now(), periods=500, freq='T')
+    dates = pd.date_range(end=datetime.now(), periods=500, freq='min')
     # Generate realistic looking power consumption (baseline + spikes)
     power = np.random.normal(50, 10, 500) # Baseline 50W
     power[np.random.choice(500, 20)] += np.random.normal(500, 100, 20) # Add spikes (e.g. fridge turning on)
@@ -102,7 +102,7 @@ st.markdown("Training the **ARIMA + Random Forest Hybrid Model** based on histor
 
 with st.spinner("Training models..."):
     # Prepare time series data (resample to avoid missing gaps)
-    ts_data = df.set_index('timestamp')['power'].resample('T').mean().interpolate()
+    ts_data = df.set_index('timestamp')['power'].resample('min').mean().interpolate()
     
     # We need at least a few points to train
     if len(ts_data) > 30:
