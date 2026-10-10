@@ -38,7 +38,7 @@ def login():
             elif password == "boarder123":
                 st.session_state['logged_in'] = True
                 st.session_state['user_role'] = "Boarder"
-                st.session_state['tenant_room'] = "Room 1 (Live)"
+                st.session_state['tenant_room'] = "Room 1"
                 st.rerun()
             elif password == "boarder456":
                 st.session_state['logged_in'] = True
@@ -195,13 +195,13 @@ def render_ml_forecast(df_room):
 
 # --- Render Views ---
 if st.session_state['user_role'] == "Boarder":
-    if st.session_state['tenant_room'] == "Room 1 (Live)":
+    if st.session_state['tenant_room'] == "Room 1":
         render_room_metrics(df_room1)
     elif st.session_state['tenant_room'] == "Room 2":
         render_room_metrics(df_room2)
 else:
     # Landlord sees all rooms in tabs
-    tab1, tab2, tab3 = st.tabs(["Room 1 (Live Data)", "Room 2 (Simulated)", "Room 3 (Simulated)"])
+    tab1, tab2, tab3 = st.tabs(["Room 1", "Room 2", "Room 3"])
     with tab1:
         render_room_metrics(df_room1)
         render_ml_forecast(df_room1)
