@@ -8,9 +8,9 @@ from sklearn.ensemble import RandomForestRegressor
 from datetime import datetime, timedelta
 
 # --- Page Config ---
-st.set_page_config(page_title="EnerCast AI", page_icon="⚡", layout="wide")
-st.title("⚡ EnerCast: AI-Powered Energy Monitor")
-st.markdown("Predictive IoT Energy Monitoring using ARIMA + Random Forest Hybrid Modeling")
+st.set_page_config(page_title="EnerCast Analytics", layout="wide")
+st.title("EnerCast Analytics Dashboard")
+st.markdown("IoT Energy Monitoring & Forecasting using Hybrid ARIMA-RF")
 
 # --- Sidebar Configuration ---
 st.sidebar.header("ThingSpeak Configuration")
@@ -76,10 +76,7 @@ def generate_dummy_data():
 df = fetch_thingspeak_data(channel_id, read_key, results_count)
 
 if df is None:
-    st.info("👈 Please enter your ThingSpeak Channel ID in the sidebar. Showing simulated data for now.")
     df = generate_dummy_data()
-else:
-    st.success("Successfully connected to ThingSpeak!")
 
 # --- Dashboard Layout ---
 col1, col2, col3, col4 = st.columns(4)
@@ -92,13 +89,13 @@ col4.metric("Estimated Cost", f"₱ {latest['energy'] * cost_per_kwh:.2f}")
 
 st.subheader("Live Power Consumption")
 fig = go.Figure()
-fig.add_trace(go.Scatter(x=df['timestamp'], y=df['power'], mode='lines', name='Power (W)', line=dict(color='#00ff88')))
-fig.update_layout(template="plotly_dark", margin=dict(l=0, r=0, t=30, b=0), height=300)
+fig.add_trace(go.Scatter(x=df['timestamp'], y=df['power'], mode='lines', name='Power (W)', line=dict(color='#2563eb')))
+fig.update_layout(margin=dict(l=0, r=0, t=30, b=0), height=300)
 st.plotly_chart(fig, use_container_width=True)
 
 # --- Machine Learning: ARIMA + Random Forest Hybrid ---
-st.header("🤖 AI Energy Forecasting")
-st.markdown("Training the **ARIMA + Random Forest Hybrid Model** based on historical data...")
+st.header("Energy Forecasting (Hybrid ARIMA-RF)")
+st.markdown("Training forecasting models based on historical data...")
 
 with st.spinner("Training models..."):
     # Prepare time series data (resample to avoid missing gaps)
@@ -156,10 +153,10 @@ with st.spinner("Training models..."):
             # Plot Results
             fig_pred = go.Figure()
             # Historical
-            fig_pred.add_trace(go.Scatter(x=ts_data.index[-100:], y=ts_data.values[-100:], mode='lines', name='Historical Data'))
+            fig_pred.add_trace(go.Scatter(x=ts_data.index[-100:], y=ts_data.values[-100:], mode='lines', name='Historical Data', line=dict(color='#64748b')))
             # Forecast
-            fig_pred.add_trace(go.Scatter(x=future_dates, y=final_forecast, mode='lines', name='Hybrid AI Forecast', line=dict(color='red', dash='dash')))
-            fig_pred.update_layout(template="plotly_dark", height=400, title="Next 30 Minutes Power Forecast (ARIMA + RF)")
+            fig_pred.add_trace(go.Scatter(x=future_dates, y=final_forecast, mode='lines', name='Hybrid Forecast', line=dict(color='#ef4444', dash='dash')))
+            fig_pred.update_layout(height=400, title="Next 30 Minutes Power Forecast (ARIMA + RF)")
             
             st.plotly_chart(fig_pred, use_container_width=True)
             
