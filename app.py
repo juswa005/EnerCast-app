@@ -46,7 +46,10 @@ def fetch_thingspeak_data(channel_id, read_key, results):
         })
         
         # Convert types and adjust timezone from UTC to Philippine Standard Time (UTC+8)
-        df['timestamp'] = pd.to_datetime(df['timestamp']).dt.tz_convert('Asia/Manila').dt.tz_localize(None)
+        df['timestamp'] = pd.to_datetime(df['timestamp'])
+        if df['timestamp'].dt.tz is None:
+            df['timestamp'] = df['timestamp'].dt.tz_localize('UTC')
+        df['timestamp'] = df['timestamp'].dt.tz_convert('Asia/Manila').dt.tz_localize(None)
         for col in ['voltage', 'current', 'power', 'energy']:
             df[col] = pd.to_numeric(df[col], errors='coerce')
             
@@ -58,7 +61,8 @@ def fetch_thingspeak_data(channel_id, read_key, results):
 
 # Generate dummy data if no channel ID is provided
 def generate_dummy_data():
-    dates = pd.date_range(end=datetime.now(), periods=500, freq='min')
+    now_ph = datetime.utcnow() + timedelta(hours=8)
+    dates = pd.date_range(end=now_ph, periods=500, freq='min')
     # Generate realistic looking power consumption (baseline + spikes)
     power = np.random.normal(50, 10, 500) # Baseline 50W
     power[np.random.choice(500, 20)] += np.random.normal(500, 100, 20) # Add spikes (e.g. fridge turning on)
