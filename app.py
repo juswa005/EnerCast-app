@@ -45,8 +45,8 @@ def fetch_thingspeak_data(channel_id, read_key, results):
             'field4': 'energy'
         })
         
-        # Convert types
-        df['timestamp'] = pd.to_datetime(df['timestamp'])
+        # Convert types and adjust timezone from UTC to Philippine Standard Time (UTC+8)
+        df['timestamp'] = pd.to_datetime(df['timestamp']).dt.tz_convert('Asia/Manila').dt.tz_localize(None)
         for col in ['voltage', 'current', 'power', 'energy']:
             df[col] = pd.to_numeric(df[col], errors='coerce')
             
